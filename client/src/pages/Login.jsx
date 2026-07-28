@@ -1,53 +1,55 @@
 import { useState } from "react";
 import { FaShieldAlt } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
-  const [loginData, setLoginData] = useState({
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [formData, setFormData] = useState({
-  email: "",
-  password: "",
-});
 
   const handleChange = (e) => {
-    setLoginData({
-      ...loginData,
+    setFormData({
+      ...formData,
       [e.target.name]: e.target.value,
     });
-    setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
-  });
   };
-  
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/auth/login",
-      formData
-    );
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData
+      );
 
-    alert(res.data.message);
+      // Store JWT Token
+      localStorage.setItem("token", res.data.token);
 
-    console.log(res.data);
+      navigate("/dashboard");
 
-  } catch (err) {
-    console.log(err);
+      // Optional: Store role
+      localStorage.setItem("role", res.data.role);
 
-    if (err.response) {
-      alert(err.response.data.message);
-    } else {
-      alert("Server Error");
+      alert("Login Successful");
+
+      // Redirect to Customer Page
+      navigate("/customers");
+
+    } catch (err) {
+      console.error(err);
+
+      if (err.response) {
+        alert(err.response.data.message);
+      } else {
+        alert("Server Error");
+      }
     }
-  }
-};
+  };
 
   return (
     <div
@@ -108,9 +110,10 @@ function Login() {
             type="email"
             name="email"
             placeholder="Enter your email"
-            value={loginData.email}
+            value={formData.email}
             onChange={handleChange}
             style={inputStyle}
+            required
           />
 
           <label>Password</label>
@@ -119,12 +122,13 @@ function Login() {
             type="password"
             name="password"
             placeholder="Enter your password"
-            value={loginData.password}
+            value={formData.password}
             onChange={handleChange}
             style={inputStyle}
+            required
           />
 
-          <button style={buttonStyle}>
+          <button type="submit" style={buttonStyle}>
             Login
           </button>
         </form>
