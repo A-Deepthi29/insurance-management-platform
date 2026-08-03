@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import Navbar from "../components/Navbar";
 
 function Customer() {
   const navigate = useNavigate();
@@ -130,215 +131,273 @@ function Customer() {
   };
 
   return (
-    <div className="container mt-5">
+  <div
+    className="container-fluid py-5"
+    style={{
+      background: "#f4f7fc",
+      minHeight: "100vh",
+    }}
+  >
+    {/* Header */}
+    <div className="card shadow border-0 mb-4">
+      <div
+        className="card-body d-flex justify-content-between align-items-center"
+        style={{
+          background: "linear-gradient(90deg,#0d6efd,#4f9dff)",
+          color: "white",
+          borderRadius: "10px",
+        }}
+      >
+        <>
+  <Navbar />
 
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="text-primary fw-bold">
-          Customer Management
-        </h2>
+  <div className="container-fluid py-5">
+
+    {/* Your Customer Page */}
+
+  </div>
+</>
 
         <button
-          className="btn btn-danger"
+          className="btn btn-light text-danger fw-bold"
           onClick={logout}
         >
+          <i className="bi bi-box-arrow-right me-2"></i>
           Logout
         </button>
       </div>
+    </div>
 
-      {/* Form Card */}
-      <div className="card shadow-lg border-0 mb-5">
+    {/* Form */}
+    <div className="card shadow-lg border-0 mb-5">
 
-        <div className="card-header bg-primary text-white">
-          <h4 className="mb-0">
-            {editingId ? "Update Customer" : "Add New Customer"}
-          </h4>
-        </div>
+      <div className="card-header bg-white">
+        <h4 className="fw-bold text-primary mb-0">
+          <i className="bi bi-person-plus-fill me-2"></i>
 
-        <div className="card-body">
+          {editingId
+            ? "Update Customer"
+            : "Add New Customer"}
+        </h4>
+      </div>
 
-          <div className="row">
+      <div className="card-body">
 
-            <div className="col-md-6 mb-3">
-              <label className="form-label">
-                Full Name
-              </label>
+        <div className="row">
 
-              <input
-                type="text"
-                className="form-control"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-              />
-            </div>
+          <div className="col-md-6 mb-3">
 
-            <div className="col-md-6 mb-3">
-              <label className="form-label">
-                Date of Birth
-              </label>
+            <label className="form-label fw-semibold">
+              Full Name
+            </label>
 
-              <input
-                type="date"
-                className="form-control"
-                name="dob"
-                value={form.dob}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="col-md-6 mb-3">
-              <label className="form-label">
-                Phone Number
-              </label>
-
-              <input
-                type="text"
-                className="form-control"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="col-md-6 mb-3">
-              <label className="form-label">
-                Email
-              </label>
-
-              <input
-                type="email"
-                className="form-control"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="col-12 mb-3">
-              <label className="form-label">
-                Address
-              </label>
-
-              <textarea
-                className="form-control"
-                rows="3"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-              ></textarea>
-            </div>
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+            />
 
           </div>
 
-          <button
-            className={`btn ${
-              editingId ? "btn-warning" : "btn-success"
-            }`}
-            onClick={saveCustomer}
-          >
-            {editingId ? "Update Customer" : "Save Customer"}
-          </button>
+          <div className="col-md-6 mb-3">
+
+            <label className="form-label fw-semibold">
+              Date of Birth
+            </label>
+
+            <input
+              type="date"
+              className="form-control form-control-lg"
+              name="dob"
+              value={form.dob}
+              onChange={handleChange}
+            />
+
+          </div>
+
+          <div className="col-md-6 mb-3">
+
+            <label className="form-label fw-semibold">
+              Phone Number
+            </label>
+
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+            />
+
+          </div>
+
+          <div className="col-md-6 mb-3">
+
+            <label className="form-label fw-semibold">
+              Email Address
+            </label>
+
+            <input
+              type="email"
+              className="form-control form-control-lg"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+            />
+
+          </div>
+
+          <div className="col-12 mb-4">
+
+            <label className="form-label fw-semibold">
+              Address
+            </label>
+
+            <textarea
+              rows="3"
+              className="form-control"
+              name="address"
+              value={form.address}
+              onChange={handleChange}
+            />
+
+          </div>
 
         </div>
+
+        <button
+          className={`btn btn-lg ${
+            editingId
+              ? "btn-warning"
+              : "btn-success"
+          }`}
+          onClick={saveCustomer}
+        >
+          <i className="bi bi-check-circle-fill me-2"></i>
+
+          {editingId
+            ? "Update Customer"
+            : "Save Customer"}
+        </button>
 
       </div>
 
-      {/* Customer Table */}
-      <div className="card shadow-lg border-0">
+    </div>
 
-        <div className="card-header bg-dark text-white">
-          <h4 className="mb-0">
-            Customer List
-          </h4>
-        </div>
+    {/* Table */}
 
-        <div className="card-body">
+    <div className="card shadow-lg border-0">
 
-          <div className="table-responsive">
+      <div className="card-header bg-primary text-white">
 
-            <table className="table table-bordered table-hover align-middle">
+        <h4 className="mb-0">
+          <i className="bi bi-table me-2"></i>
+          Customer List
+        </h4>
 
-              <thead className="table-primary">
+      </div>
+
+      <div className="card-body">
+
+        <div className="table-responsive">
+
+          <table className="table table-hover align-middle">
+
+            <thead className="table-primary">
+
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th width="180">Actions</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              {customers.length === 0 ? (
 
                 <tr>
-                  <th>Name</th>
-                  <th>DOB</th>
-                  <th>Phone</th>
-                  <th>Address</th>
-                  <th>Email</th>
-                  <th width="180">Actions</th>
+
+                  <td
+                    colSpan="7"
+                    className="text-center py-5"
+                  >
+                    <h5 className="text-muted">
+                      No Customers Found
+                    </h5>
+                  </td>
+
                 </tr>
 
-              </thead>
+              ) : (
 
-              <tbody>
+                customers.map((customer, index) => (
 
-                {customers.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="6"
-                      className="text-center text-muted"
-                    >
-                      No Customers Found
+                  <tr key={customer.id}>
+
+                    <td>{index + 1}</td>
+
+                    <td className="fw-semibold">
+                      {customer.name}
                     </td>
+
+                    <td>
+                      {customer.dob?.substring(0,10)}
+                    </td>
+
+                    <td>{customer.phone}</td>
+
+                    <td>{customer.email}</td>
+
+                    <td>{customer.address}</td>
+
+                    <td>
+
+                      <button
+                        className="btn btn-warning btn-sm me-2"
+                        onClick={() =>
+                          editCustomer(customer)
+                        }
+                      >
+                        <i className="bi bi-pencil-square"></i>
+                      </button>
+
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() =>
+                          deleteCustomer(customer.id)
+                        }
+                      >
+                        <i className="bi bi-trash-fill"></i>
+                      </button>
+
+                    </td>
+
                   </tr>
-                ) : (
-                  customers.map((customer) => (
-                    <tr
-                      key={customer.id || customer._id}
-                    >
-                      <td>{customer.name}</td>
 
-                      <td>
-                        {customer.dob?.substring(0, 10)}
-                      </td>
+                ))
 
-                      <td>{customer.phone}</td>
+              )}
 
-                      <td>{customer.address}</td>
+            </tbody>
 
-                      <td>{customer.email}</td>
-
-                      <td>
-
-                        <button
-                          className="btn btn-warning btn-sm me-2"
-                          onClick={() =>
-                            editCustomer(customer)
-                          }
-                        >
-                          Edit
-                        </button>
-
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() =>
-                            deleteCustomer(
-                              customer.id || customer._id
-                            )
-                          }
-                        >
-                          Delete
-                        </button>
-
-                      </td>
-                    </tr>
-                  ))
-                )}
-
-              </tbody>
-
-            </table>
-
-          </div>
+          </table>
 
         </div>
 
       </div>
 
     </div>
-  );
+
+  </div>
+);
 }
 
 export default Customer;

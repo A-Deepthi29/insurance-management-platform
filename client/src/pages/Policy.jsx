@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import Navbar from "../components/Navbar";
 
 const Policy = () => {
   const [customers, setCustomers] = useState([]);
@@ -333,6 +334,15 @@ const Policy = () => {
     )}
   </tbody>
 </table>
+<>
+  <Navbar />
+
+  <div className="container py-5">
+
+    {/* Policy Page */}
+
+  </div>
+</>
     </div>
   );
 };

@@ -43,4 +43,17 @@ model Policy {
   endDate DateTime
 
   status String
+  premiumPayments PremiumPayment[]
+}
+
+model PremiumPayment {
+  id            Int      @id @default(autoincrement())
+  policyId      Int
+  paymentDate   DateTime
+  amount        Float
+  paymentStatus String
+
+  policy Policy @relation(fields: [policyId], references: [id])
+
+  createdAt DateTime @default(now())
 }
