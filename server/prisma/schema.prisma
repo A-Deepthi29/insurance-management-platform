@@ -29,21 +29,20 @@ model Customer {
 }
 
 model Policy {
-  id Int @id @default(autoincrement())
-
-  customerId Int
+  id             Int      @id @default(autoincrement())
+  customerId     Int
+  policyType     String
+  policyNumber   String
+  premiumAmount  Float
+  startDate      DateTime
+  endDate        DateTime
+  status         String
 
   customer Customer @relation(fields: [customerId], references: [id])
 
-  policyType String
-  policyNumber String @unique
-  premiumAmount Float
-
-  startDate DateTime
-  endDate DateTime
-
-  status String
   premiumPayments PremiumPayment[]
+
+  claims Claim[]
 }
 
 model PremiumPayment {
@@ -56,4 +55,15 @@ model PremiumPayment {
   policy Policy @relation(fields: [policyId], references: [id])
 
   createdAt DateTime @default(now())
+}
+
+model Claim {
+  id             Int      @id @default(autoincrement())
+  policyId       Int
+  claimAmount    Float
+  reason         String
+  status         String
+  submissionDate DateTime
+
+  policy Policy @relation(fields: [policyId], references: [id])
 }

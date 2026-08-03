@@ -1,6 +1,7 @@
 const express = require("express");
-
 const router = express.Router();
+
+const authMiddleware = require("../middleware/authMiddleware");
 
 const {
   createPremium,
@@ -9,8 +10,6 @@ const {
   updatePremium,
   deletePremium,
 } = require("../controllers/premiumController");
-
-const authMiddleware = require("../middleware/authMiddleware");
 
 // Create Premium
 router.post("/", authMiddleware, createPremium);
@@ -26,7 +25,5 @@ router.put("/:id", authMiddleware, updatePremium);
 
 // Delete Premium
 router.delete("/:id", authMiddleware, deletePremium);
-
-router.put("/:id", verifyToken, updatePayment);
 
 module.exports = router;

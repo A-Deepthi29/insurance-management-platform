@@ -6,6 +6,7 @@ import Customer from "./pages/Customer";
 import Policy from "./pages/Policy";
 import Premium from "./pages/Premium";
 import Dashboard from "./pages/Dashboard";
+import Claim from "./pages/Claim";
 
 function App() {
   return (
@@ -24,6 +25,8 @@ function App() {
         <Route path="/policy" element={<Policy />} />
 
         <Route path="/premium" element={<Premium />} />
+        
+        <Route path="/claim" element={<Claim />} />
       </Routes>
     
   );
