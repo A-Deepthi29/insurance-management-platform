@@ -76,7 +76,7 @@ function Dashboard() {
 
         {/* Navigation Cards */}
         <div className="row">
-          <div className="col-md-4 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
             <div
               className="card shadow-lg border-0 h-100"
               style={{ cursor: "pointer" }}
@@ -92,7 +92,7 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="col-md-4 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
             <div
               className="card shadow-lg border-0 h-100"
               style={{ cursor: "pointer" }}
@@ -108,7 +108,7 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="col-md-4 mb-4">
+          <div className="col-lg-4 col-md-6 mb-4">
             <div
               className="card shadow-lg border-0 h-100"
               style={{ cursor: "pointer" }}
@@ -123,6 +123,58 @@ function Dashboard() {
               </div>
             </div>
           </div>
+          <div className="col-lg-4 col-md-6 mb-4">
+  <div
+    className="card shadow-lg border-0 h-100"
+    style={{
+      cursor: "pointer",
+      transition: "0.3s",
+    }}
+    onClick={() => navigate("/claim")}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = "translateY(-5px)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = "translateY(0)";
+    }}
+  >
+    <div className="card-body text-center">
+      <h1>📋</h1>
+
+      <h4>Claim Management</h4>
+
+      <p className="text-muted">
+        Submit and manage insurance claims
+      </p>
+    </div>
+  </div>
+</div>
+<div className="col-lg-4 col-md-6 mb-4">
+  <div
+    className="card shadow-lg border-0 h-100"
+    style={{
+      cursor: "pointer",
+      transition: "0.3s",
+    }}
+    onClick={() => navigate("/document")}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = "translateY(-5px)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = "translateY(0)";
+    }}
+  >
+    <div className="card-body text-center">
+      <h1>📁</h1>
+
+      <h4>Document Management</h4>
+
+      <p className="text-muted">
+        Upload and manage customer documents
+      </p>
+    </div>
+  </div>
+</div>
         </div>
       </div>
     </>

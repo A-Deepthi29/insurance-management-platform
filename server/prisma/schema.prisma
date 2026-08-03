@@ -26,6 +26,7 @@ model Customer {
   createdAt  DateTime  @default(now())
 
   policies   Policy[]
+  documents Document[]
 }
 
 model Policy {
@@ -66,4 +67,14 @@ model Claim {
   submissionDate DateTime
 
   policy Policy @relation(fields: [policyId], references: [id])
+}
+
+model Document {
+  id          Int      @id @default(autoincrement())
+  customerId  Int
+  fileName    String
+  filePath    String
+  uploadedAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id])
 }
