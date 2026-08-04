@@ -12,7 +12,7 @@ const createPremium = async (req, res) => {
       paymentStatus,
     } = req.body;
 
-    // Check policy exists
+    // Check Policy Exists
     const policy = await prisma.policy.findUnique({
       where: {
         id: Number(policyId),
@@ -38,8 +38,9 @@ const createPremium = async (req, res) => {
       message: "Premium Payment Added Successfully",
       premium,
     });
-  } catch (error) {
-    console.log(error);
+
+  } catch (err) {
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
@@ -52,22 +53,82 @@ const createPremium = async (req, res) => {
 // =============================
 const getPremiums = async (req, res) => {
   try {
+
+    const search = req.query.search || "";
+    const status = req.query.status || "";
+
     const premiums = await prisma.premiumPayment.findMany({
+
+      where: {
+
+        AND: [
+
+          status
+            ? { paymentStatus: status }
+            : {},
+
+          {
+
+            OR: [
+
+              {
+
+                paymentStatus: {
+
+                  contains: search,
+                  mode: "insensitive",
+
+                },
+
+              },
+
+              {
+
+                policy: {
+
+                  policyNumber: {
+
+                    contains: search,
+                    mode: "insensitive",
+
+                  },
+
+                },
+
+              },
+
+            ],
+
+          },
+
+        ],
+
+      },
+
       include: {
+
         policy: true,
+
       },
+
       orderBy: {
+
         id: "desc",
+
       },
+
     });
 
     res.json(premiums);
-  } catch (error) {
-    console.log(error);
+
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
 };
 
@@ -75,37 +136,50 @@ const getPremiums = async (req, res) => {
 // Get Single Premium
 // =============================
 const getPremiumById = async (req, res) => {
+
   try {
+
     const premium = await prisma.premiumPayment.findUnique({
+
       where: {
         id: Number(req.params.id),
       },
+
       include: {
         policy: true,
       },
+
     });
 
     if (!premium) {
+
       return res.status(404).json({
-        message: "Premium Payment not found",
+        message: "Premium Payment Not Found",
       });
+
     }
 
     res.json(premium);
-  } catch (error) {
-    console.log(error);
+
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
+
 };
 
 // =============================
 // Update Premium
 // =============================
 const updatePremium = async (req, res) => {
+
   try {
+
     const {
       policyId,
       paymentDate,
@@ -114,102 +188,115 @@ const updatePremium = async (req, res) => {
     } = req.body;
 
     const premium = await prisma.premiumPayment.findUnique({
+
       where: {
         id: Number(req.params.id),
       },
+
     });
 
     if (!premium) {
+
       return res.status(404).json({
-        message: "Premium Payment not found",
+        message: "Premium Payment Not Found",
       });
+
     }
 
     const updated = await prisma.premiumPayment.update({
+
       where: {
         id: Number(req.params.id),
       },
+
       data: {
+
         policyId: Number(policyId),
         paymentDate: new Date(paymentDate),
         amount: Number(amount),
         paymentStatus,
+
       },
+
     });
 
     res.json({
+
       message: "Premium Updated Successfully",
-      updated,
+      premium: updated,
+
     });
-  } catch (error) {
-    console.log(error);
+
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
+
 };
 
 // =============================
 // Delete Premium
 // =============================
 const deletePremium = async (req, res) => {
+
   try {
+
     const premium = await prisma.premiumPayment.findUnique({
+
       where: {
         id: Number(req.params.id),
       },
+
     });
 
     if (!premium) {
+
       return res.status(404).json({
-        message: "Premium Payment not found",
+        message: "Premium Payment Not Found",
       });
+
     }
 
     await prisma.premiumPayment.delete({
+
       where: {
         id: Number(req.params.id),
       },
+
     });
 
     res.json({
+
       message: "Premium Deleted Successfully",
+
     });
-  } catch (error) {
-    console.log(error);
+
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
-};
-
-exports.updatePayment = async (req, res) => {
-
-  const { id } = req.params;
-
-  const payment = await prisma.premiumPayment.update({
-
-    where: {
-      id: Number(id),
-    },
-
-    data: req.body,
-
-  });
-
-  res.json({
-    message: "Payment Updated Successfully",
-    payment,
-  });
 
 };
 
+// =============================
+// Export
+// =============================
 module.exports = {
+
   createPremium,
   getPremiums,
   getPremiumById,
   updatePremium,
   deletePremium,
+
 };

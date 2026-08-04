@@ -2,183 +2,176 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 function Dashboard() {
+
   const navigate = useNavigate();
 
-  return (
+  const cards = [
+
+    {
+      title: "Customers",
+      icon: "👥",
+      description: "Add, Edit and Delete Customers",
+      color: "primary",
+      path: "/customers",
+    },
+
+    {
+      title: "Policies",
+      icon: "📄",
+      description: "Manage Insurance Policies",
+      color: "success",
+      path: "/policy",
+    },
+
+    {
+      title: "Premium Tracking",
+      icon: "💳",
+      description: "Track Premium Payments",
+      color: "warning",
+      path: "/premium",
+    },
+
+    {
+      title: "Claim Management",
+      icon: "📋",
+      description: "Submit and Manage Claims",
+      color: "danger",
+      path: "/claim",
+    },
+
+    {
+      title: "Document Management",
+      icon: "📁",
+      description: "Upload and Manage Documents",
+      color: "info",
+      path: "/document",
+    },
+
+    {
+      title: "Reports",
+      icon: "📊",
+      description: "Business Analytics & Reports",
+      color: "secondary",
+      path: "/report",
+    },
+
+  ];
+    return (
     <>
       <Navbar />
 
       <div
         className="container-fluid py-5"
         style={{
-          background: "#f4f7fc",
           minHeight: "100vh",
+          background: "#f4f7fc",
         }}
       >
-        {/* Hero Section */}
+
+        {/* Hero */}
+
         <div
-          className="p-5 rounded-4 text-white shadow mb-5"
+          className="p-5 rounded-4 shadow-lg text-white mb-5"
           style={{
-            background: "linear-gradient(135deg,#0d6efd,#6610f2)",
+            background:
+              "linear-gradient(135deg,#0d6efd,#6610f2)",
           }}
         >
-          <h1 className="fw-bold">
-            🛡 Insurance Management Dashboard
+
+          <h1 className="fw-bold display-5">
+            🛡 Insurance Management Platform
           </h1>
 
-          <p className="mb-0 fs-5">
-            Welcome Back! Manage your insurance business from one place.
+          <p className="fs-5 mb-0">
+
+            Welcome Back!
+
+            Manage Customers, Policies,
+            Premiums, Claims, Documents
+            and Reports from one place.
+
           </p>
+
         </div>
+                {/* Navigation Cards */}
 
-        {/* Statistics */}
-        <div className="row mb-5">
-          <div className="col-md-3">
-            <div className="card shadow border-0 text-center">
-              <div className="card-body">
-                <h1>👥</h1>
-                <h5>Total Customers</h5>
-                <h3 className="text-primary">0</h3>
-              </div>
-            </div>
-          </div>
+        <div className="row g-4">
 
-          <div className="col-md-3">
-            <div className="card shadow border-0 text-center">
-              <div className="card-body">
-                <h1>📄</h1>
-                <h5>Total Policies</h5>
-                <h3 className="text-success">0</h3>
-              </div>
-            </div>
-          </div>
+          {cards.map((card) => (
 
-          <div className="col-md-3">
-            <div className="card shadow border-0 text-center">
-              <div className="card-body">
-                <h1>💳</h1>
-                <h5>Premium Payments</h5>
-                <h3 className="text-warning">0</h3>
-              </div>
-            </div>
-          </div>
+            <div
+              key={card.title}
+              className="col-lg-4 col-md-6"
+            >
 
-          <div className="col-md-3">
-            <div className="card shadow border-0 text-center">
-              <div className="card-body">
-                <h1>📋</h1>
-                <h5>Total Claims</h5>
-                <h3 className="text-danger">0</h3>
+              <div
+                className="card shadow-lg border-0 h-100"
+
+                style={{
+                  cursor: "pointer",
+                  transition: "0.3s",
+                }}
+
+                onClick={() =>
+                  navigate(card.path)
+                }
+
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(-6px)";
+                }}
+
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform =
+                    "translateY(0)";
+                }}
+
+              >
+
+                <div className="card-body text-center p-4">
+
+                  <h1
+                    className={`text-${card.color}`}
+                    style={{
+                      fontSize: "55px",
+                    }}
+                  >
+                    {card.icon}
+                  </h1>
+
+                  <h4 className="fw-bold mt-3">
+
+                    {card.title}
+
+                  </h4>
+
+                  <p className="text-muted">
+
+                    {card.description}
+
+                  </p>
+
+                  <button
+                    className={`btn btn-${card.color} mt-2`}
+                  >
+                    Open Module
+                  </button>
+
+                </div>
+
               </div>
+
             </div>
-          </div>
+
+          ))}
+
         </div>
-
-        {/* Navigation Cards */}
-        <div className="row">
-          <div className="col-lg-4 col-md-6 mb-4">
-            <div
-              className="card shadow-lg border-0 h-100"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/customers")}
-            >
-              <div className="card-body text-center">
-                <h1>👥</h1>
-                <h4>Customers</h4>
-                <p className="text-muted">
-                  Add, Edit and Delete customers
-                </p>
               </div>
-            </div>
-          </div>
 
-          <div className="col-lg-4 col-md-6 mb-4">
-            <div
-              className="card shadow-lg border-0 h-100"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/policy")}
-            >
-              <div className="card-body text-center">
-                <h1>📄</h1>
-                <h4>Policies</h4>
-                <p className="text-muted">
-                  Manage insurance policies
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-lg-4 col-md-6 mb-4">
-            <div
-              className="card shadow-lg border-0 h-100"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/premium")}
-            >
-              <div className="card-body text-center">
-                <h1>💳</h1>
-                <h4>Premium Tracking</h4>
-                <p className="text-muted">
-                  Manage premium payments
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="col-lg-4 col-md-6 mb-4">
-  <div
-    className="card shadow-lg border-0 h-100"
-    style={{
-      cursor: "pointer",
-      transition: "0.3s",
-    }}
-    onClick={() => navigate("/claim")}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = "translateY(-5px)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = "translateY(0)";
-    }}
-  >
-    <div className="card-body text-center">
-      <h1>📋</h1>
-
-      <h4>Claim Management</h4>
-
-      <p className="text-muted">
-        Submit and manage insurance claims
-      </p>
-    </div>
-  </div>
-</div>
-<div className="col-lg-4 col-md-6 mb-4">
-  <div
-    className="card shadow-lg border-0 h-100"
-    style={{
-      cursor: "pointer",
-      transition: "0.3s",
-    }}
-    onClick={() => navigate("/document")}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = "translateY(-5px)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = "translateY(0)";
-    }}
-  >
-    <div className="card-body text-center">
-      <h1>📁</h1>
-
-      <h4>Document Management</h4>
-
-      <p className="text-muted">
-        Upload and manage customer documents
-      </p>
-    </div>
-  </div>
-</div>
-        </div>
-      </div>
     </>
+
   );
+
 }
 
 export default Dashboard;

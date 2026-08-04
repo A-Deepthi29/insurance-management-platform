@@ -8,6 +8,7 @@ import Premium from "./pages/Premium";
 import Dashboard from "./pages/Dashboard";
 import Claim from "./pages/Claim";
 import Document from "./pages/Document";
+import Report from "./pages/Report";
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
         <Route path="/claim" element={<Claim />} />
 
         <Route path="/document" element={<Document />} />
+
+        <Route path="/report" element={<Report />} />
       </Routes>
     
   );

@@ -17,33 +17,30 @@ model User {
 }
 
 model Customer {
-  id         Int       @id @default(autoincrement())
-  name       String
-  dob        DateTime
-  phone      String
-  address    String
-  email      String    @unique
-  createdAt  DateTime  @default(now())
+  id      Int      @id @default(autoincrement())
+  name    String
+  dob     DateTime
+  phone   String
+  address String
+  email   String   @unique
 
-  policies   Policy[]
+  policies  Policy[]
   documents Document[]
 }
 
 model Policy {
-  id             Int      @id @default(autoincrement())
-  customerId     Int
-  policyType     String
-  policyNumber   String
-  premiumAmount  Float
-  startDate      DateTime
-  endDate        DateTime
-  status         String
+  id            Int      @id @default(autoincrement())
+  customerId    Int
+  policyType    String
+  policyNumber  String   @unique
+  premiumAmount Float
+  startDate     DateTime
+  endDate       DateTime
+  status        String
 
-  customer Customer @relation(fields: [customerId], references: [id])
-
+  customer        Customer         @relation(fields: [customerId], references: [id])
   premiumPayments PremiumPayment[]
-
-  claims Claim[]
+  claims          Claim[]
 }
 
 model PremiumPayment {
@@ -54,8 +51,6 @@ model PremiumPayment {
   paymentStatus String
 
   policy Policy @relation(fields: [policyId], references: [id])
-
-  createdAt DateTime @default(now())
 }
 
 model Claim {
@@ -70,11 +65,11 @@ model Claim {
 }
 
 model Document {
-  id          Int      @id @default(autoincrement())
-  customerId  Int
-  fileName    String
-  filePath    String
-  uploadedAt  DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  fileName   String
+  filePath   String
+  uploadedAt DateTime @default(now())
 
   customer Customer @relation(fields: [customerId], references: [id])
 }

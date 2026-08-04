@@ -1,37 +1,18 @@
 const express = require("express");
-
 const router = express.Router();
 
-const claimController = require("../controllers/claimController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-const verifyToken = require("../middleware/authMiddleware");
+const {
+  getClaims,
+  createClaim,
+  updateClaim,
+  deleteClaim,
+} = require("../controllers/claimController");
 
-// ===============================
-// Claim Routes
-// ===============================
-
-router.get(
-  "/",
-  verifyToken,
-  claimController.getClaims
-);
-
-router.post(
-  "/",
-  verifyToken,
-  claimController.createClaim
-);
-
-router.put(
-  "/:id",
-  verifyToken,
-  claimController.updateClaim
-);
-
-router.delete(
-  "/:id",
-  verifyToken,
-  claimController.deleteClaim
-);
+router.post("/", authMiddleware, createClaim);
+router.get("/", authMiddleware, getClaims);
+router.put("/:id", authMiddleware, updateClaim);
+router.delete("/:id", authMiddleware, deleteClaim);
 
 module.exports = router;

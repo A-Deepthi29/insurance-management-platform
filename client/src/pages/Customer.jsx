@@ -1,14 +1,20 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 
 function Customer() {
-  const navigate = useNavigate();
 
   const [customers, setCustomers] = useState([]);
 
-  const [form, setForm] = useState({
+  const [editingId, setEditingId] = useState(null);
+
+  const [search, setSearch] = useState("");
+
+  const [page, setPage] = useState(1);
+
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [formData, setFormData] = useState({
     name: "",
     dob: "",
     phone: "",
@@ -16,388 +22,452 @@ function Customer() {
     email: "",
   });
 
-  const [editingId, setEditingId] = useState(null);
-
+  // -----------------------
   // Fetch Customers
-  const fetchCustomers = async () => {
-    try {
-      const res = await api.get("/customers");
-      setCustomers(res.data);
-    } catch (err) {
-      console.log(err);
-      alert("Failed to load customers");
-    }
-  };
+  // -----------------------
+
+  const fetchCustomers = useCallback(async () => {
+  try {
+    const res = await api.get(
+      `/customers?search=${search}&page=${page}`
+    );
+
+    setCustomers(res.data.customers);
+    setTotalPages(res.data.totalPages);
+
+  } catch (err) {
+    console.log(err);
+  }
+}, [search, page]);
 
   useEffect(() => {
-    const loadCustomers = async () => {
-      await fetchCustomers();
-    };
+  fetchCustomers();
+}, [fetchCustomers]);
 
-    loadCustomers();
-  }, []);
+    // -----------------------
+  // Handle Change
+  // -----------------------
 
-  // Handle Input Change
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
 
-  // Save or Update Customer
-  const saveCustomer = async () => {
+    setFormData({
+
+      ...formData,
+
+      [e.target.name]: e.target.value,
+
+    });
+
+  };
+    // -----------------------
+  // Save Customer
+  // -----------------------
+
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
     try {
-      if (
-        !form.name ||
-        !form.dob ||
-        !form.phone ||
-        !form.address ||
-        !form.email
-      ) {
-        alert("Please fill all fields");
-        return;
-      }
 
       if (editingId) {
-        await api.put(`/customers/${editingId}`, form);
+
+        await api.put(
+          `/customers/${editingId}`,
+          formData
+        );
+
         alert("Customer Updated Successfully");
+
       } else {
-        await api.post("/customers", form);
+
+        await api.post(
+          "/customers",
+          formData
+        );
+
         alert("Customer Added Successfully");
+
       }
 
-      setForm({
+      setEditingId(null);
+
+      setFormData({
+
         name: "",
         dob: "",
         phone: "",
         address: "",
         email: "",
+
       });
 
-      setEditingId(null);
+      fetchCustomers();
 
-      await fetchCustomers();
     } catch (err) {
-      console.log(err);
+  console.log(err);
 
-      if (err.response) {
-        alert(err.response.data.message);
-      } else {
-        alert("Server Error");
-      }
-    }
+  console.log(err.response?.data);
+
+  alert(err.response?.data?.message || "Operation Failed");
+}
+
   };
-
+    // -----------------------
   // Edit Customer
-  const editCustomer = (customer) => {
-    setEditingId(customer.id || customer._id);
+  // -----------------------
 
-    setForm({
+  const editCustomer = (customer) => {
+
+    setEditingId(customer.id);
+
+    setFormData({
       name: customer.name,
-      dob: customer.dob?.substring(0, 10),
+      dob: customer.dob.substring(0, 10),
       phone: customer.phone,
       address: customer.address,
       email: customer.email,
     });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
   };
 
+  // -----------------------
   // Delete Customer
+  // -----------------------
+
   const deleteCustomer = async (id) => {
-    if (!window.confirm("Delete this customer?")) return;
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this customer?"
+    );
+
+    if (!confirmDelete) return;
 
     try {
+
       await api.delete(`/customers/${id}`);
 
       alert("Customer Deleted Successfully");
 
-      await fetchCustomers();
+      fetchCustomers();
+
     } catch (err) {
+
       console.log(err);
 
-      if (err.response) {
-        alert(err.response.data.message);
-      } else {
-        alert("Server Error");
-      }
+      alert("Delete Failed");
+
     }
+
   };
+    return (
+    <>
+      <Navbar />
 
-  // Logout
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    navigate("/login");
-  };
+      <div className="container py-5">
 
-  return (
-  <div
-    className="container-fluid py-5"
-    style={{
-      background: "#f4f7fc",
-      minHeight: "100vh",
-    }}
-  >
-    {/* Header */}
-    <div className="card shadow border-0 mb-4">
-      <div
-        className="card-body d-flex justify-content-between align-items-center"
-        style={{
-          background: "linear-gradient(90deg,#0d6efd,#4f9dff)",
-          color: "white",
-          borderRadius: "10px",
-        }}
-      >
-        <>
-  <Navbar />
+        {/* Heading */}
 
-  <div className="container-fluid py-5">
+        <div className="text-center mb-5">
 
-    {/* Your Customer Page */}
+          <h1 className="fw-bold text-primary">
+            👥 Customer Management
+          </h1>
 
-  </div>
-</>
+          <p className="text-muted">
+            Add, update and manage customer information.
+          </p>
 
-        <button
-          className="btn btn-light text-danger fw-bold"
-          onClick={logout}
-        >
-          <i className="bi bi-box-arrow-right me-2"></i>
-          Logout
-        </button>
-      </div>
-    </div>
+        </div>
 
-    {/* Form */}
-    <div className="card shadow-lg border-0 mb-5">
+        {/* Form */}
 
-      <div className="card-header bg-white">
-        <h4 className="fw-bold text-primary mb-0">
-          <i className="bi bi-person-plus-fill me-2"></i>
+        <div className="card shadow-lg border-0 mb-5">
 
-          {editingId
-            ? "Update Customer"
-            : "Add New Customer"}
-        </h4>
-      </div>
+          <div className="card-header bg-primary text-white">
 
-      <div className="card-body">
-
-        <div className="row">
-
-          <div className="col-md-6 mb-3">
-
-            <label className="form-label fw-semibold">
-              Full Name
-            </label>
-
-            <input
-              type="text"
-              className="form-control form-control-lg"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-            />
+            <h4 className="mb-0">
+              {editingId
+                ? "Update Customer"
+                : "Add New Customer"}
+            </h4>
 
           </div>
 
-          <div className="col-md-6 mb-3">
+          <div className="card-body">
 
-            <label className="form-label fw-semibold">
-              Date of Birth
-            </label>
+            <form onSubmit={handleSubmit}>
 
-            <input
-              type="date"
-              className="form-control form-control-lg"
-              name="dob"
-              value={form.dob}
-              onChange={handleChange}
-            />
+              <div className="row">
 
-          </div>
+                <div className="col-md-6 mb-3">
 
-          <div className="col-md-6 mb-3">
+                  <label className="form-label">
+                    Name
+                  </label>
 
-            <label className="form-label fw-semibold">
-              Phone Number
-            </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
 
-            <input
-              type="text"
-              className="form-control form-control-lg"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-            />
+                </div>
 
-          </div>
+                <div className="col-md-6 mb-3">
 
-          <div className="col-md-6 mb-3">
+                  <label className="form-label">
+                    Email
+                  </label>
 
-            <label className="form-label fw-semibold">
-              Email Address
-            </label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
 
-            <input
-              type="email"
-              className="form-control form-control-lg"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-            />
+                </div>
 
-          </div>
+                <div className="col-md-6 mb-3">
 
-          <div className="col-12 mb-4">
+                  <label className="form-label">
+                    Phone
+                  </label>
 
-            <label className="form-label fw-semibold">
-              Address
-            </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                  />
 
-            <textarea
-              rows="3"
-              className="form-control"
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-            />
+                </div>
+
+                <div className="col-md-6 mb-3">
+
+                  <label className="form-label">
+                    Date of Birth
+                  </label>
+
+                  <input
+                    type="date"
+                    className="form-control"
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </div>
+
+                <div className="col-12 mb-4">
+
+                  <label className="form-label">
+                    Address
+                  </label>
+
+                  <textarea
+                    rows="3"
+                    className="form-control"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleChange}
+                    required
+                  />
+
+                </div>
+
+              </div>
+
+              <button
+                className={`btn btn-lg ${
+                  editingId
+                    ? "btn-warning"
+                    : "btn-success"
+                }`}
+              >
+                {editingId
+                  ? "Update Customer"
+                  : "Save Customer"}
+              </button>
+
+            </form>
 
           </div>
 
         </div>
 
-        <button
-          className={`btn btn-lg ${
-            editingId
-              ? "btn-warning"
-              : "btn-success"
-          }`}
-          onClick={saveCustomer}
-        >
-          <i className="bi bi-check-circle-fill me-2"></i>
+        {/* Search */}
 
-          {editingId
-            ? "Update Customer"
-            : "Save Customer"}
-        </button>
+        <div className="card shadow border-0 mb-4">
 
-      </div>
+          <div className="card-body">
 
-    </div>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="🔍 Search by Name, Email or Phone"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
 
-    {/* Table */}
+          </div>
 
-    <div className="card shadow-lg border-0">
+        </div>
+                {/* Customer Table */}
 
-      <div className="card-header bg-primary text-white">
+        <div className="card shadow-lg border-0">
 
-        <h4 className="mb-0">
-          <i className="bi bi-table me-2"></i>
-          Customer List
-        </h4>
+          <div className="card-header bg-primary text-white">
 
-      </div>
+            <h4 className="mb-0">
+              👥 Customer List
+            </h4>
 
-      <div className="card-body">
+          </div>
 
-        <div className="table-responsive">
+          <div className="card-body">
 
-          <table className="table table-hover align-middle">
+            <div className="table-responsive">
 
-            <thead className="table-primary">
+              <table className="table table-hover align-middle">
 
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>DOB</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th width="180">Actions</th>
-              </tr>
+                <thead className="table-primary">
 
-            </thead>
-
-            <tbody>
-
-              {customers.length === 0 ? (
-
-                <tr>
-
-                  <td
-                    colSpan="7"
-                    className="text-center py-5"
-                  >
-                    <h5 className="text-muted">
-                      No Customers Found
-                    </h5>
-                  </td>
-
-                </tr>
-
-              ) : (
-
-                customers.map((customer, index) => (
-
-                  <tr key={customer.id}>
-
-                    <td>{index + 1}</td>
-
-                    <td className="fw-semibold">
-                      {customer.name}
-                    </td>
-
-                    <td>
-                      {customer.dob?.substring(0,10)}
-                    </td>
-
-                    <td>{customer.phone}</td>
-
-                    <td>{customer.email}</td>
-
-                    <td>{customer.address}</td>
-
-                    <td>
-
-                      <button
-                        className="btn btn-warning btn-sm me-2"
-                        onClick={() =>
-                          editCustomer(customer)
-                        }
-                      >
-                        <i className="bi bi-pencil-square"></i>
-                      </button>
-
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() =>
-                          deleteCustomer(customer.id)
-                        }
-                      >
-                        <i className="bi bi-trash-fill"></i>
-                      </button>
-
-                    </td>
-
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>DOB</th>
+                    <th>Address</th>
+                    <th width="170">Actions</th>
                   </tr>
 
-                ))
+                </thead>
 
-              )}
+                <tbody>
 
-            </tbody>
+                  {customers.length === 0 ? (
 
-          </table>
+                    <tr>
+
+                      <td
+                        colSpan="7"
+                        className="text-center"
+                      >
+                        No Customers Found
+                      </td>
+
+                    </tr>
+
+                  ) : (
+
+                    customers.map((customer) => (
+
+                      <tr key={customer.id}>
+
+                        <td>{customer.id}</td>
+
+                        <td>{customer.name}</td>
+
+                        <td>{customer.email}</td>
+
+                        <td>{customer.phone}</td>
+
+                        <td>
+                          {customer.dob.substring(0,10)}
+                        </td>
+
+                        <td>{customer.address}</td>
+
+                        <td>
+
+                          <button
+                            className="btn btn-warning btn-sm me-2"
+                            onClick={() =>
+                              editCustomer(customer)
+                            }
+                          >
+                            ✏ Edit
+                          </button>
+
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() =>
+                              deleteCustomer(customer.id)
+                            }
+                          >
+                            🗑 Delete
+                          </button>
+
+                        </td>
+
+                      </tr>
+
+                    ))
+
+                  )}
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+            {/* Pagination */}
+
+            <div className="d-flex justify-content-center align-items-center mt-4">
+
+              <button
+                className="btn btn-secondary me-3"
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+              >
+                ◀ Previous
+              </button>
+
+              <span className="fw-bold">
+
+                Page {page} of {totalPages}
+
+              </span>
+
+              <button
+                className="btn btn-primary ms-3"
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                Next ▶
+              </button>
+
+            </div>
+
+          </div>
 
         </div>
 
       </div>
 
-    </div>
+    </>
 
-  </div>
-);
+  );
+
 }
 
 export default Customer;

@@ -1,5 +1,20 @@
-const { PrismaClient } = require("@prisma/client");
+const search = req.query.search || "";
 
-const prisma = new PrismaClient();
-
-module.exports = prisma;
+const policies = await prisma.policy.findMany({
+  where: {
+    OR: [
+      {
+        policyNumber: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+      {
+        policyType: {
+          contains: search,
+          mode: "insensitive",
+        },
+      },
+    ],
+  },
+});

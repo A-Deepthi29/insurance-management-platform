@@ -1,9 +1,9 @@
 const prisma = require("../config/prisma");
 
 // ==============================
-// CREATE POLICY
+// Create Policy
 // ==============================
-exports.createPolicy = async (req, res) => {
+const createPolicy = async (req, res) => {
   try {
     const {
       customerId,
@@ -15,7 +15,6 @@ exports.createPolicy = async (req, res) => {
       status,
     } = req.body;
 
-    // Validate required fields
     if (
       !customerId ||
       !policyType ||
@@ -30,7 +29,6 @@ exports.createPolicy = async (req, res) => {
       });
     }
 
-    // Check customer exists
     const customer = await prisma.customer.findUnique({
       where: {
         id: Number(customerId),
@@ -43,7 +41,6 @@ exports.createPolicy = async (req, res) => {
       });
     }
 
-    // Check duplicate policy number
     const existingPolicy = await prisma.policy.findUnique({
       where: {
         policyNumber,
@@ -56,7 +53,6 @@ exports.createPolicy = async (req, res) => {
       });
     }
 
-    // Create policy
     const policy = await prisma.policy.create({
       data: {
         customerId: Number(customerId),
@@ -74,78 +70,96 @@ exports.createPolicy = async (req, res) => {
       policy,
     });
 
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
 };
 
 // ==============================
-// GET ALL POLICIES
+// Get Policies (Search + Filter)
 // ==============================
-exports.getPolicies = async (req, res) => {
+const getPolicies = async (req, res) => {
+
   try {
+
+    const search = req.query.search || "";
+    const status = req.query.status || "";
+
     const policies = await prisma.policy.findMany({
+
+      where: {
+
+        AND: [
+
+          status ? { status } : {},
+
+          {
+
+            OR: [
+
+              {
+
+                policyNumber: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+
+              },
+
+              {
+
+                policyType: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+
+              },
+
+            ],
+
+          },
+
+        ],
+
+      },
+
       include: {
         customer: true,
       },
+
       orderBy: {
         id: "desc",
       },
+
     });
 
-    res.status(200).json(policies);
+    res.json(policies);
 
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
+
 };
 
 // ==============================
-// GET SINGLE POLICY
+// Update Policy
 // ==============================
-exports.getPolicyById = async (req, res) => {
+const updatePolicy = async (req, res) => {
+
   try {
-    const { id } = req.params;
 
-    const policy = await prisma.policy.findUnique({
-      where: {
-        id: Number(id),
-      },
-      include: {
-        customer: true,
-      },
-    });
-
-    if (!policy) {
-      return res.status(404).json({
-        message: "Policy not found",
-      });
-    }
-
-    res.status(200).json(policy);
-
-  } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      message: "Server Error",
-    });
-  }
-};
-
-// ==============================
-// UPDATE POLICY
-// ==============================
-exports.updatePolicy = async (req, res) => {
-  try {
     const { id } = req.params;
 
     const {
@@ -158,36 +172,24 @@ exports.updatePolicy = async (req, res) => {
       status,
     } = req.body;
 
-    // Check policy exists
-    const existingPolicy = await prisma.policy.findUnique({
+    const policy = await prisma.policy.findUnique({
       where: {
         id: Number(id),
       },
     });
 
-    if (!existingPolicy) {
+    if (!policy) {
       return res.status(404).json({
-        message: "Policy not found",
-      });
-    }
-
-    // Check customer exists
-    const customer = await prisma.customer.findUnique({
-      where: {
-        id: Number(customerId),
-      },
-    });
-
-    if (!customer) {
-      return res.status(404).json({
-        message: "Customer not found",
+        message: "Policy Not Found",
       });
     }
 
     const updatedPolicy = await prisma.policy.update({
+
       where: {
         id: Number(id),
       },
+
       data: {
         customerId: Number(customerId),
         policyType,
@@ -197,56 +199,78 @@ exports.updatePolicy = async (req, res) => {
         endDate: new Date(endDate),
         status,
       },
+
     });
 
-    res.status(200).json({
+    res.json({
       message: "Policy Updated Successfully",
       policy: updatedPolicy,
     });
 
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
+
 };
 
 // ==============================
-// DELETE POLICY
+// Delete Policy
 // ==============================
-exports.deletePolicy = async (req, res) => {
+const deletePolicy = async (req, res) => {
+
   try {
+
     const { id } = req.params;
 
-    const existingPolicy = await prisma.policy.findUnique({
+    const policy = await prisma.policy.findUnique({
+
       where: {
         id: Number(id),
       },
+
     });
 
-    if (!existingPolicy) {
+    if (!policy) {
+
       return res.status(404).json({
-        message: "Policy not found",
+        message: "Policy Not Found",
       });
+
     }
 
     await prisma.policy.delete({
+
       where: {
         id: Number(id),
       },
+
     });
 
-    res.status(200).json({
+    res.json({
       message: "Policy Deleted Successfully",
     });
 
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+
+    console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
+
   }
+
+};
+
+module.exports = {
+  createPolicy,
+  getPolicies,
+  updatePolicy,
+  deletePolicy,
 };

@@ -1,137 +1,211 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../services/api";
 import Navbar from "../components/Navbar";
 
 function Claim() {
+
   const [policies, setPolicies] = useState([]);
-const [claims, setClaims] = useState([]);
+  const [claims, setClaims] = useState([]);
 
-const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
 
-const [formData, setFormData] = useState({
-  policyId: "",
-  claimAmount: "",
-  reason: "",
-  submissionDate: "",
-  status: "Pending",
-});
+  const [search, setSearch] = useState("");
+
+  const [status, setStatus] = useState("");
+
+  const [page, setPage] = useState(1);
+
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [formData, setFormData] = useState({
+    policyId: "",
+    claimAmount: "",
+    reason: "",
+    submissionDate: "",
+    status: "Pending",
+  });
+
+  // ==========================
   // Fetch Policies
-  const fetchPolicies = async () => {
-    try {
-      const res = await api.get("/policies");
-      setPolicies(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // ==========================
 
-  // Fetch Claims
-  const fetchClaims = async () => {
-    try {
-      const res = await api.get("/claims");
-      setClaims(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const fetchPolicies = useCallback(async () => {
+  try {
 
-  useEffect(() => {
-  const loadData = async () => {
-    await Promise.all([
-      fetchPolicies(),
-      fetchClaims(),
-    ]);
-  };
+    const res = await api.get("/policies");
 
-  loadData();
+    setPolicies(res.data);
+
+  } catch (err) {
+    console.log(err);
+  }
 }, []);
 
-  // Input Change
+  // ==========================
+  // Fetch Claims
+  // ==========================
+
+  const fetchClaims = useCallback(async () => {
+  try {
+
+    const res = await api.get(
+      `/claims?search=${search}&status=${status}&page=${page}`
+    );
+
+    setClaims(res.data.claims);
+    setTotalPages(res.data.totalPages);
+
+  } catch (err) {
+    console.log(err);
+  }
+}, [search, status, page]);
+
+  useEffect(() => {
+  fetchPolicies();
+  fetchClaims();
+}, [fetchPolicies, fetchClaims]);
+    // ==========================
+  // Handle Input Change
+  // ==========================
+
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+
   };
 
-  // Save / Update
+  // ==========================
+  // Save / Update Claim
+  // ==========================
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     try {
+
       if (editingId) {
-        await api.put(`/claims/${editingId}`, formData);
+
+        await api.put(
+          `/claims/${editingId}`,
+          formData
+        );
+
         alert("Claim Updated Successfully");
+
       } else {
-        await api.post("/claims", formData);
+
+        await api.post(
+          "/claims",
+          formData
+        );
+
         alert("Claim Added Successfully");
+
       }
 
       setEditingId(null);
 
       setFormData({
+
         policyId: "",
         claimAmount: "",
         reason: "",
         submissionDate: "",
         status: "Pending",
+
       });
 
       fetchClaims();
+
     } catch (err) {
+
       console.log(err);
 
-      if (err.response) {
+      if (err.response?.data?.message) {
+
         alert(err.response.data.message);
+
       } else {
-        alert("Server Error");
+
+        alert("Operation Failed");
+
       }
+
     }
+
   };
 
-  // Edit
+  // ==========================
+  // Edit Claim
+  // ==========================
+
   const editClaim = (claim) => {
+
     setEditingId(claim.id);
 
     setFormData({
+
       policyId: claim.policyId,
+
       claimAmount: claim.claimAmount,
+
       reason: claim.reason,
+
       submissionDate: claim.submissionDate.substring(0, 10),
+
       status: claim.status,
+
     });
 
     window.scrollTo({
+
       top: 0,
+
       behavior: "smooth",
+
     });
+
   };
 
-  // Delete
+  // ==========================
+  // Delete Claim
+  // ==========================
+
   const deleteClaim = async (id) => {
-    if (!window.confirm("Delete this claim?")) return;
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this claim?"
+    );
+
+    if (!confirmDelete) return;
 
     try {
+
       await api.delete(`/claims/${id}`);
 
       alert("Claim Deleted Successfully");
 
       fetchClaims();
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
-  return (
+    } catch (err) {
+
+      console.log(err);
+
+      alert("Delete Failed");
+
+    }
+
+  };
+    return (
     <>
       <Navbar />
 
-      <div
-        className="container py-5"
-        style={{
-          maxWidth: "1100px",
-        }}
-      >
+      <div className="container py-5">
+
         {/* Heading */}
 
         <div className="text-center mb-5">
@@ -146,14 +220,16 @@ const [formData, setFormData] = useState({
 
         </div>
 
-        {/* Form */}
+        {/* Claim Form */}
 
         <div className="card shadow-lg border-0 mb-5">
 
           <div className="card-header bg-primary text-white">
 
             <h4 className="mb-0">
-              {editingId ? "Update Claim" : "Submit New Claim"}
+              {editingId
+                ? "Update Claim"
+                : "Submit New Claim"}
             </h4>
 
           </div>
@@ -163,6 +239,8 @@ const [formData, setFormData] = useState({
             <form onSubmit={handleSubmit}>
 
               <div className="row">
+
+                {/* Policy */}
 
                 <div className="col-md-6 mb-3">
 
@@ -197,6 +275,8 @@ const [formData, setFormData] = useState({
 
                 </div>
 
+                {/* Claim Amount */}
+
                 <div className="col-md-6 mb-3">
 
                   <label className="form-label">
@@ -213,6 +293,8 @@ const [formData, setFormData] = useState({
                   />
 
                 </div>
+
+                {/* Submission Date */}
 
                 <div className="col-md-6 mb-3">
 
@@ -231,6 +313,8 @@ const [formData, setFormData] = useState({
 
                 </div>
 
+                {/* Status */}
+
                 <div className="col-md-6 mb-3">
 
                   <label className="form-label">
@@ -244,13 +328,23 @@ const [formData, setFormData] = useState({
                     onChange={handleChange}
                   >
 
-                    <option>Pending</option>
-                    <option>Approved</option>
-                    <option>Rejected</option>
+                    <option value="Pending">
+                      Pending
+                    </option>
+
+                    <option value="Approved">
+                      Approved
+                    </option>
+
+                    <option value="Rejected">
+                      Rejected
+                    </option>
 
                   </select>
 
                 </div>
+
+                {/* Reason */}
 
                 <div className="col-12 mb-4">
 
@@ -289,7 +383,66 @@ const [formData, setFormData] = useState({
 
         </div>
 
-        {/* Table */}
+        {/* Search + Filter */}
+
+        <div className="card shadow border-0 mb-4">
+
+          <div className="card-body">
+
+            <div className="row">
+
+              <div className="col-md-8">
+
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="🔍 Search by Reason or Status"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                />
+
+              </div>
+
+              <div className="col-md-4">
+
+                <select
+                  className="form-select"
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value);
+                    setPage(1);
+                  }}
+                >
+
+                  <option value="">
+                    All Status
+                  </option>
+
+                  <option value="Pending">
+                    Pending
+                  </option>
+
+                  <option value="Approved">
+                    Approved
+                  </option>
+
+                  <option value="Rejected">
+                    Rejected
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+                {/* Claim History Table */}
 
         <div className="card shadow-lg border-0">
 
@@ -310,22 +463,30 @@ const [formData, setFormData] = useState({
                 <thead className="table-primary">
 
                   <tr>
+
                     <th>ID</th>
+
                     <th>Policy</th>
+
                     <th>Amount</th>
+
                     <th>Reason</th>
-                    <th>Date</th>
+
+                    <th>Submission Date</th>
+
                     <th>Status</th>
+
                     <th width="180">
                       Actions
                     </th>
+
                   </tr>
 
                 </thead>
 
                 <tbody>
 
-                  {claims.length === 0 ? (
+                  {claims?.length === 0 ? (
 
                     <tr>
 
@@ -354,12 +515,12 @@ const [formData, setFormData] = useState({
                           ₹{claim.claimAmount}
                         </td>
 
-                        <td>
-                          {claim.reason}
-                        </td>
+                        <td>{claim.reason}</td>
 
                         <td>
-                          {claim.submissionDate.substring(0,10)}
+                          {new Date(
+                            claim.submissionDate
+                          ).toLocaleDateString()}
                         </td>
 
                         <td>
@@ -412,13 +573,42 @@ const [formData, setFormData] = useState({
 
             </div>
 
+            {/* Pagination */}
+
+            <div className="d-flex justify-content-center align-items-center mt-4">
+
+              <button
+                className="btn btn-secondary me-3"
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+              >
+                ◀ Previous
+              </button>
+
+              <span className="fw-bold">
+                Page {page} of {totalPages}
+              </span>
+
+              <button
+                className="btn btn-primary ms-3"
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                Next ▶
+              </button>
+
+            </div>
+
           </div>
 
         </div>
 
       </div>
+
     </>
+
   );
+
 }
 
 export default Claim;

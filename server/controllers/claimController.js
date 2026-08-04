@@ -1,24 +1,64 @@
 const prisma = require("../config/prisma");
 
 // ===============================
-// Get All Claims
+// Get Claims (Search + Filter)
 // ===============================
-exports.getClaims = async (req, res) => {
+const getClaims = async (req, res) => {
   try {
+    const search = req.query.search || "";
+    const status = req.query.status || "";
+    const page = Number(req.query.page) || 1;
+    const limit = 5;
+
+    const where = {
+      AND: [
+        status ? { status } : {},
+        {
+          OR: [
+            {
+              reason: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+            {
+              status: {
+                contains: search,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
     const claims = await prisma.claim.findMany({
+      where,
       include: {
         policy: true,
       },
       orderBy: {
         id: "desc",
       },
+      skip: (page - 1) * limit,
+      take: limit,
     });
 
-    res.json(claims);
+    const total = await prisma.claim.count({
+      where,
+    });
+
+    res.json({
+      claims,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+    });
+
   } catch (err) {
     console.log(err);
+
     res.status(500).json({
-      message: "Failed to fetch claims",
+      message: "Server Error",
     });
   }
 };
@@ -26,8 +66,10 @@ exports.getClaims = async (req, res) => {
 // ===============================
 // Create Claim
 // ===============================
-exports.createClaim = async (req, res) => {
+const createClaim = async (req, res) => {
+
   try {
+
     const {
       policyId,
       claimAmount,
@@ -37,6 +79,7 @@ exports.createClaim = async (req, res) => {
     } = req.body;
 
     const claim = await prisma.claim.create({
+
       data: {
         policyId: Number(policyId),
         claimAmount: Number(claimAmount),
@@ -44,25 +87,35 @@ exports.createClaim = async (req, res) => {
         status,
         submissionDate: new Date(submissionDate),
       },
+
     });
 
     res.status(201).json({
+
       message: "Claim Created Successfully",
       claim,
+
     });
+
   } catch (err) {
+
     console.log(err);
+
     res.status(500).json({
-      message: "Failed to create claim",
+      message: "Failed to Create Claim",
     });
+
   }
+
 };
 
 // ===============================
 // Update Claim
 // ===============================
-exports.updateClaim = async (req, res) => {
+const updateClaim = async (req, res) => {
+
   try {
+
     const { id } = req.params;
 
     const {
@@ -74,9 +127,11 @@ exports.updateClaim = async (req, res) => {
     } = req.body;
 
     const claim = await prisma.claim.update({
+
       where: {
         id: Number(id),
       },
+
       data: {
         policyId: Number(policyId),
         claimAmount: Number(claimAmount),
@@ -84,40 +139,64 @@ exports.updateClaim = async (req, res) => {
         status,
         submissionDate: new Date(submissionDate),
       },
+
     });
 
     res.json({
+
       message: "Claim Updated Successfully",
       claim,
+
     });
+
   } catch (err) {
+
     console.log(err);
+
     res.status(500).json({
       message: "Update Failed",
     });
+
   }
+
 };
 
 // ===============================
 // Delete Claim
 // ===============================
-exports.deleteClaim = async (req, res) => {
+const deleteClaim = async (req, res) => {
+
   try {
+
     const { id } = req.params;
 
     await prisma.claim.delete({
+
       where: {
         id: Number(id),
       },
+
     });
 
     res.json({
       message: "Claim Deleted Successfully",
     });
+
   } catch (err) {
+
     console.log(err);
+
     res.status(500).json({
       message: "Delete Failed",
     });
+
   }
+
+};
+
+module.exports = {
+  getClaims,
+  createClaim,
+  updateClaim,
+  deleteClaim,
 };
