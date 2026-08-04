@@ -64,35 +64,52 @@ function Dashboard() {
         className="container-fluid py-5"
         style={{
           minHeight: "100vh",
-          background: "#f4f7fc",
+          background:
+"linear-gradient(to bottom,#eef2ff,#ffffff)",
         }}
       >
 
-        {/* Hero */}
-
         <div
-          className="p-5 rounded-4 shadow-lg text-white mb-5"
-          style={{
-            background:
-              "linear-gradient(135deg,#0d6efd,#6610f2)",
-          }}
-        >
+  className="rounded-4 shadow-lg p-5 mb-5 text-white"
+  style={{
+    background:
+      "linear-gradient(135deg,#2563eb,#4f46e5,#7c3aed)",
+  }}
+>
+  <div className="d-flex justify-content-between align-items-center flex-wrap">
 
-          <h1 className="fw-bold display-5">
-            🛡 Insurance Management Platform
-          </h1>
+    <div>
 
-          <p className="fs-5 mb-0">
+      <h1 className="fw-bold display-5">
+        🛡 Insurance Dashboard
+      </h1>
 
-            Welcome Back!
+      <p
+        className="fs-5 mt-3 mb-0"
+        style={{
+          opacity: "0.9",
+        }}
+      >
+        Manage Customers, Policies, Premiums,
+        Claims and Documents from one place.
+      </p>
 
-            Manage Customers, Policies,
-            Premiums, Claims, Documents
-            and Reports from one place.
+    </div>
 
-          </p>
+    <div className="text-center mt-3 mt-lg-0">
 
-        </div>
+      <h2 className="fw-bold">
+        Welcome 👋
+      </h2>
+
+      <p className="mb-0">
+        Insurance Management Platform
+      </p>
+
+    </div>
+
+  </div>
+</div>
                 {/* Navigation Cards */}
 
         <div className="row g-4">
@@ -154,7 +171,13 @@ function Dashboard() {
                   <button
                     className={`btn btn-${card.color} mt-2`}
                   >
-                    Open Module
+                    <button
+ className={`btn btn-${card.color} px-4 py-2 rounded-pill`}
+>
+
+Open Module →
+
+</button>
                   </button>
 
                 </div>
