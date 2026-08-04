@@ -179,49 +179,38 @@ const updateCustomer = async (req, res) => {
 // Delete Customer
 // ==============================
 const deleteCustomer = async (req, res) => {
-
   try {
-
     const { id } = req.params;
 
-    const customer = await prisma.customer.findUnique({
-
+    const policy = await prisma.policy.findFirst({
       where: {
-        id: Number(id),
+        customerId: Number(id),
       },
-
     });
 
-    if (!customer) {
-
-      return res.status(404).json({
-        message: "Customer Not Found",
+    if (policy) {
+      return res.status(400).json({
+        message: "Cannot delete customer because policies exist.",
       });
-
     }
 
     await prisma.customer.delete({
-
       where: {
         id: Number(id),
       },
-
     });
 
     res.json({
-      message: "Customer Deleted Successfully",
+      message: "Customer deleted successfully",
     });
 
   } catch (err) {
-
     console.log(err);
 
     res.status(500).json({
       message: "Server Error",
     });
-
   }
-
 };
 
 // ==============================
