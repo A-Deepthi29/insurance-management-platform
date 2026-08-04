@@ -10,7 +10,7 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 router.post(
   "/",
   authMiddleware,
-  roleMiddleware("Administrator"),
+  roleMiddleware("Administrator", "Insurance Agent"),
   customerController.addCustomer
 );
 
@@ -29,7 +29,7 @@ router.get(
 router.put(
   "/:id",
   authMiddleware,
-  roleMiddleware("Administrator"),
+  roleMiddleware("Administrator", "Insurance Agent"),
   customerController.updateCustomer
 );
 

@@ -7,17 +7,35 @@ const {
   updatePolicy,
   deletePolicy,
 } = require("../controllers/policyController");
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
-// Create Policy
-router.post("/", createPolicy);
+router.post(
+  "/",
+  authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
+  createPolicy
+);
 
-// Get All Policies
-router.get("/", getPolicies);
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
+  getPolicies
+);
 
-// Update Policy
-router.put("/:id", updatePolicy);
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
+  updatePolicy
+);
 
-// Delete Policy
-router.delete("/:id", deletePolicy);
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("Administrator"),
+  deletePolicy
+);
 
 module.exports = router;

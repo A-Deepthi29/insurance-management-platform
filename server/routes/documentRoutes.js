@@ -15,32 +15,23 @@ const {
 router.post(
   "/",
   authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
   upload.single("file"),
   uploadDocument
 );
 
-// Get All Documents
 router.get(
   "/",
   authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
   getDocuments
 );
 
-// Delete Document
 router.delete(
   "/:id",
   authMiddleware,
+  roleMiddleware("Administrator"),
   deleteDocument
-);
-
-router.post(
-    "/",
-    authMiddleware,
-    roleMiddleware(
-    "Administrator",
-    "Insurance Agent"
-),
-    uploadDocument
 );
 
 module.exports = router;

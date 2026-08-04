@@ -11,18 +11,32 @@ const {
   deleteClaim,
 } = require("../controllers/claimController");
 
-router.post("/", authMiddleware, createClaim);
-router.get("/", authMiddleware, getClaims);
-router.put("/:id", authMiddleware, updateClaim);
-router.delete("/:id", authMiddleware, deleteClaim);
 router.post(
-    "/",
-    authMiddleware,
-    roleMiddleware(
-    "Administrator",
-    "Insurance Agent"
-),
-    createClaim
+  "/",
+  authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
+  createClaim
+);
+
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
+  getClaims
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
+  updateClaim
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware("Administrator"),
+  deleteClaim
 );
 
 module.exports = router;

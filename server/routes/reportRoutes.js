@@ -9,13 +9,11 @@ const {
 } = require("../controllers/reportController");
 
 // Get Dashboard Report
-router.get("/", authMiddleware, getReport);
-
 router.get(
-    "/",
-    authMiddleware,
-    roleMiddleware("Administrator"),
-    getReport
+  "/",
+  authMiddleware,
+  roleMiddleware("Administrator", "Insurance Agent"),
+  getReport
 );
 
 module.exports = router;
