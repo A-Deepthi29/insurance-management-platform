@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 const {
   createPremium,
@@ -20,5 +21,15 @@ router.get("/:id", authMiddleware, getPremiumById);
 router.put("/:id", authMiddleware, updatePremium);
 
 router.delete("/:id", authMiddleware, deletePremium);
+
+router.post(
+    "/",
+    authMiddleware,
+    roleMiddleware(
+    "Administrator",
+    "Insurance Agent"
+),
+    createPremium
+);
 
 module.exports = router;

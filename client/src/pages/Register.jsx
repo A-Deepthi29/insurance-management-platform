@@ -34,9 +34,11 @@ function Register() {
 
     alert(res.data.message);
   } catch (err) {
-    console.log(err);
-    alert("Server Error");
-  }
+  console.log(err.response?.data);
+  console.log(err.response?.status);
+
+  alert(err.response?.data?.message || "Server Error");
+}
 };
   return (
     <div

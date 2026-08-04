@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaShieldAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -19,37 +19,29 @@ function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
-        formData
-      );
+  try {
+    const response = await api.post("/auth/login", formData);
 
-      // Store JWT Token
-      localStorage.setItem("token", res.data.token);
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("role", response.data.role);
+    localStorage.setItem(
+      "user",
+      JSON.stringify(response.data.user)
+    );
 
-      navigate("/dashboard");
+    alert("Login Successful");
 
-      // Optional: Store role
-      localStorage.setItem("role", res.data.role);
+    navigate("/dashboard");
 
-      alert("Login Successful");
+  } catch (err) {
+  console.log(err.response?.data);
+  console.log(err.response?.status);
 
-      // Redirect to Customer Page
-      navigate("/customers");
-
-    } catch (err) {
-      console.error(err);
-
-      if (err.response) {
-        alert(err.response.data.message);
-      } else {
-        alert("Server Error");
-      }
-    }
-  };
+  alert(err.response?.data?.message || "Login Failed");
+}
+};
 
   return (
     <div

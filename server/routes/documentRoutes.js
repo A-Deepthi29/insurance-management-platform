@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 const upload = require("../middleware/upload");
 
 const {
@@ -30,6 +31,16 @@ router.delete(
   "/:id",
   authMiddleware,
   deleteDocument
+);
+
+router.post(
+    "/",
+    authMiddleware,
+    roleMiddleware(
+    "Administrator",
+    "Insurance Agent"
+),
+    uploadDocument
 );
 
 module.exports = router;
