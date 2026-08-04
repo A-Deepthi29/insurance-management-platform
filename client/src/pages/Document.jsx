@@ -12,7 +12,11 @@ const [formData, setFormData] = useState({
 const fetchCustomers = async () => {
   try {
     const res = await api.get("/customers");
+
+    console.log(res.data);   // <-- add this
+
     setCustomers(res.data);
+
   } catch (err) {
     console.log(err);
   }
@@ -130,30 +134,22 @@ return (
               </label>
 
               <select
-                className="form-select"
-                name="customerId"
-                value={formData.customerId}
-                onChange={handleChange}
-                required
-              >
+  className="form-select"
+  name="customerId"
+  value={formData.customerId}
+  onChange={handleChange}
+>
+  <option value="">Select Customer</option>
 
-                <option value="">
-                  Select Customer
-                </option>
-
-                {customers.map((customer) => (
-
-                  <option
-                    key={customer.id}
-                    value={customer.id}
-                  >
-                    {customer.name}
-                  </option>
-
-                ))}
-
-              </select>
-
+  {customers.map((customer) => (
+    <option
+      key={customer.id}
+      value={customer.id}
+    >
+      {customer.name}
+    </option>
+  ))}
+</select>
             </div>
 
             <div className="mb-3">
@@ -244,8 +240,10 @@ return (
                 <td>{doc.fileName}</td>
 
                 <td>
-                  {doc.uploadDate.substring(0,10)}
-                </td>
+  {document.uploadDate
+    ? document.uploadDate.substring(0, 10)
+    : "-"}
+</td>
 
                 <td>
 
