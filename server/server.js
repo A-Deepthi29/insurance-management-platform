@@ -8,6 +8,7 @@ const policyRoutes = require("./routes/policyRoutes");
 const premiumRoutes = require("./routes/premiumRoutes");
 const claimRoutes = require("./routes/claimRoutes");
 const documentRoutes = require("./routes/documentRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/api/policies", policyRoutes);
 app.use("/api/premiums", premiumRoutes);
 app.use("/api/claims", claimRoutes);
 app.use("/api/documents", documentRoutes);
+app.use("/api/reports", reportRoutes);
 
 const PORT = process.env.PORT || 5000;
 
